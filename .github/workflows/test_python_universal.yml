@@ -1,4 +1,6 @@
-name: test
+# Execute feast's universal python plugin integration suite
+
+name: test-python-universal
 
 on: [push, pull_request]
 
@@ -8,7 +10,8 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix: # we can decide to expand or reduce these versions; add testing for mac/windows; test against psycopg2/3 and other dependencies
+      matrix:
+        feast-version: ["v0.15.0", "v0.15.1", "v0.16.0", "v0.16.1", "v0.17.0", "v0.18.0"]
         python-version: ["3.7", "3.8", "3.9"]
         postgres-version: [11, 12, 13, 14]
         os: ["ubuntu-latest"]
@@ -28,8 +31,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: recursive
 
       - name: Setup Python
         id: setup-python
@@ -38,10 +39,14 @@ jobs:
           python-version: "${{ matrix.python-version }}"
           architecture: x64
 
+      - name: Clone feast-dev/feast at specific version
+        run: |
+          git clone --branch ${{ matrix.feast-version }} --depth 1 https://github.com/feast-dev/feast.git
+
       - name: Install dependencies
         run: |
           pip install -U pip wheel pip-tools
-          pip install -e .
+          pip install .
 
       - name: Install feast dependencies
         run: |
