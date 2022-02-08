@@ -16,6 +16,10 @@ jobs:
         postgres-version: [11, 12, 13, 14]
         os: ["ubuntu-latest"]
 
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python-version }}
+
     services:
       postgres:
         image: postgres:${{ matrix.postgres-version }}
