@@ -1,6 +1,8 @@
-name: test-python-universal
+# Execute feast's universal python plugin integration suite
 
-description: Execute multiple versions of feast's universal python plugin integration suite
+name: tests
+
+description: Execute feast-postgres tests against latest feast release across several python and postgresql versions
 
 on: [push, pull_request]
 
@@ -11,9 +13,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        feast-version: ["v0.15.0", "v0.15.1", "v0.16.0", "v0.16.1", "v0.17.0", "v0.18.0"]
-        python-version: ["3.7"]
-        postgres-version: [13]
+        python-version: ["3.7", "3.8", "3.9"]
+        postgres-version: [11, 12, 13, 14]
         os: ["ubuntu-latest"]
 
     env:
@@ -43,22 +44,16 @@ jobs:
           python-version: "${{ matrix.python-version }}"
           architecture: x64
 
-      - name: Clone feast-dev/feast at specific version
-        run: |
-          git clone --branch ${{ matrix.feast-version }} --depth 1 https://github.com/feast-dev/feast.git
-
       - name: Install dependencies
         run: |
-          pip install -U pip wheel pip-tools
-          pip install -e .
+          pip install -U pip wheel
+          pip install .[dev]
 
-      - name: Install feast dependencies
-        run: |
-          cd feast
-          make install-python-ci-dependencies
+      - name: Record feast version
+        run: pip freeze | grep 'feast'
 
-      - name: Run feast universal tests
+      - name: Run feast-postgres tests
         run: |
-          make test-python-universal
+          make run-tests
           
 

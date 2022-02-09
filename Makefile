@@ -1,5 +1,8 @@
 MAKE_HELP_LEFT_COLUMN_WIDTH:=14
 .PHONY: help build
+
+FEAST_VERSION ?= v0.18.0
+
 help: ## This help.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-$(MAKE_HELP_LEFT_COLUMN_WIDTH)s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort
 
@@ -29,6 +32,12 @@ start-test-db:
 stop-test-db:
 	docker-compose down
 
+# e.g. FEAST_VERSION=v0.16.1 make install-feast-folder
+install-feast-folder:
+	rm -rf feast/
+	git clone --branch ${FEAST_VERSION} --depth 1 https://github.com/feast-dev/feast.git
+	cd feast; pip install -e "sdk/python[ci]"
+
 # Here we have to type out the whole command for the test rather than having
 # `cd feast && FULL_REPO_CONFIGS_MODULE=tests.repo_config make test-python-universal`
 # The reason is that feast runs the tests in parallel and doing so the update function
@@ -43,5 +52,14 @@ stop-test-db:
 #   other transactions. So CREATE SCHEMA / CREATE TABLE tries to create it because, as
 #   far as it's concerned, the object doesn't exist.
 # 
+
+run-tests:
+	FEAST_USAGE=False \
+		IS_TEST=True \
+		python -m pytest tests/
+
 test-python-universal:
-	cd feast && FULL_REPO_CONFIGS_MODULE=tests.repo_config FEAST_USAGE=False IS_TEST=True python -m pytest --integration --universal sdk/python/tests
+	export FULL_REPO_CONFIGS='tests.repo_config'
+	FEAST_USAGE=False \
+		IS_TEST=True \
+		python -m pytest --integration --universal feast/sdk/python/tests
