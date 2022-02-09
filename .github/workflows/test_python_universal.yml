@@ -1,6 +1,6 @@
-name: test-python-universal
+# Execute multiple versions of feast's universal python plugin integration suite
 
-description: Execute multiple versions of feast's universal python plugin integration suite
+name: test-python-universal
 
 on: [push, pull_request]
 

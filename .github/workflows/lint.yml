@@ -1,6 +1,6 @@
-name: lint
+# lint feast-postgres, targeting python 3.7
 
-description: lint feast-postgres, targeting python 3.7
+name: lint
 
 on: [push, pull_request]
 

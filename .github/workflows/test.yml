@@ -1,8 +1,6 @@
-# Execute feast's universal python plugin integration suite
+# Execute feast-postgres tests against latest feast release across several python and postgresql versions
 
 name: tests
-
-description: Execute feast-postgres tests against latest feast release across several python and postgresql versions
 
 on: [push, pull_request]
 
