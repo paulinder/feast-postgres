@@ -43,19 +43,17 @@ jobs:
           python-version: "${{ matrix.python-version }}"
           architecture: x64
 
-      - name: Clone feast-dev/feast at specific version
-        run: |
-          git clone --branch ${{ matrix.feast-version }} --depth 1 https://github.com/feast-dev/feast.git
-
       - name: Install dependencies
         run: |
-          pip install -U pip wheel pip-tools
+          pip install -U pip wheel
           pip install -e .
 
-      - name: Install feast dependencies
+      - name: Install feast in a subfolder, run pip install
         run: |
-          cd feast
-          make install-python-ci-dependencies
+          make install-feast-folder
+
+      - name: Record feast version
+        run: python -c 'import feast; print(feast.__version__)'
 
       - name: Run feast universal tests
         run: |

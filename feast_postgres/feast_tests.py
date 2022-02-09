@@ -1,31 +1,35 @@
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
-from feast_postgres.utils import _get_conn, df_to_postgres_table
 import pandas as pd
 
-from feast_postgres import PostgreSQLSource, PostgreSQLOfflineStoreConfig
 from feast.data_source import DataSource
 from feast.repo_config import FeastConfigBaseModel
+from feast_postgres import PostgreSQLOfflineStoreConfig, PostgreSQLSource
+from feast_postgres.utils import _get_conn, df_to_postgres_table
+from tests.integration.feature_repos.integration_test_repo_config import (
+    IntegrationTestRepoConfig,
+)
 from tests.integration.feature_repos.universal.data_source_creator import (
     DataSourceCreator,
 )
 
+
 class PostgreSQLDataSourceCreator(DataSourceCreator):
 
-    tables = []
+    tables: List[str] = []
 
     def __init__(self, project_name: str):
         super().__init__()
         self.project_name = project_name
 
         self.offline_store_config = PostgreSQLOfflineStoreConfig(
-                type = "feast_postgres.PostgreSQLOfflineStore",
-                host = "localhost",
-                port = 5432,
-                database = "postgres",
-                db_schema = "public",
-                user = "postgres",
-                password = "docker",
+            type="feast_postgres.PostgreSQLOfflineStore",
+            host="localhost",
+            port=5432,
+            database="postgres",
+            db_schema="public",
+            user="postgres",
+            password="postgres",
         )
 
     def create_data_source(
@@ -64,5 +68,20 @@ class PostgreSQLDataSourceCreator(DataSourceCreator):
                 cur.execute("DROP TABLE IF EXISTS " + table)
 
 
+POSTGRES_ONLINE_CONFIG = {
+    "type": "feast_postgres.PostgreSQLOnlineStore",
+    "host": "localhost",
+    "port": "5432",
+    "database": "postgres",
+    "db_schema": "feature_store",
+    "user": "postgres",
+    "password": "postgres",
+}
 
-
+FULL_REPO_CONFIGS = [
+    IntegrationTestRepoConfig(
+        provider="local",
+        offline_store_creator=PostgreSQLDataSourceCreator,
+        online_store=POSTGRES_ONLINE_CONFIG,
+    ),
+]

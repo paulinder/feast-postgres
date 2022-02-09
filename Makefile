@@ -59,7 +59,7 @@ run-tests:
 		python -m pytest tests/
 
 test-python-universal:
-	export FULL_REPO_CONFIGS='tests.repo_config'
-	FEAST_USAGE=False \
+	FULL_REPO_CONFIGS_MODULE='feast_postgres.feast_tests' \
+		FEAST_USAGE=False \
 		IS_TEST=True \
 		python -m pytest --integration --universal feast/sdk/python/tests

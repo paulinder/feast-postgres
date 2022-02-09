@@ -50,7 +50,7 @@ jobs:
           pip install .[dev]
 
       - name: Record feast version
-        run: pip freeze | grep 'feast'
+        run: python -c 'import feast; print(feast.__version__)'
 
       - name: Run feast-postgres tests
         run: |
