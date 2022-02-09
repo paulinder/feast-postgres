@@ -50,7 +50,7 @@ jobs:
 
       - name: Install feast in a subfolder, run pip install
         run: |
-          make install-feast-folder
+          FEAST_VERSION=${{ matrix.feast-version }} make install-feast-folder
 
       - name: Record feast version
         run: python -c 'import feast; print(feast.__version__)'
